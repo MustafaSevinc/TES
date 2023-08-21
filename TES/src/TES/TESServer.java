@@ -2,6 +2,8 @@ package TES;
 
 import TES.SimCommands.CommandBase;
 
+import java.util.HashMap;
+
 public class TESServer {
     InputManager inputManager;
     Simulator simulator;
@@ -34,10 +36,9 @@ public class TESServer {
                 close();
                 return;
             }
-            CommandBase executableCommand = parser.parse(inputText);
-            if (executableCommand != null) {
-                simulator.commandReceived(executableCommand);
-            }
+            HashMap keyValue = parser.parse(inputText);
+            CommandBase command = CommandBase.
+            command.setParams(keyValue);
         }
     }
 

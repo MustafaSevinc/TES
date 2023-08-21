@@ -1,51 +1,36 @@
 package TES.SimCommands;
-
 import TES.Simulator;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public abstract class CommandBase {
 
     private String commandName;
-    private HashMap keyValues;
-    private List<Object> params;
 
-    public CommandBase(String commandName, HashMap keyValues){
-        this(commandName);
-        this.keyValues = keyValues;
-    }
+    public static Map<String, Function<HashMap<String, String>, CommandBase>> commandNames = new HashMap<>();
 
-    public CommandBase(String commandName){
+
+    public CommandBase(String commandName, HashMap<String, String> keyValue, Function<HashMap<String, String>, CommandBase> factoryFunc) {
         this.commandName = commandName;
+        commandNames.put(commandName, factoryFunc);
+        setParams(keyValue);
     }
-
-    public CommandBase(String commandName, List<Object> params){
-        this(commandName);
-        this.params = params;
-    }
-
-
-
-
-
 
     public abstract void execute(Simulator sim);
+    public abstract void setParams(HashMap<String,String> params);
 
 
     public String getCommandName() {
         return commandName;
     }
 
-    public void setCommandName(String commandName) {
-        this.commandName = commandName;
-    }
 
-    public HashMap getKeyValues() {
-        return keyValues;
-    }
 
-    public void setKeyValues(HashMap keyValues) {
-        this.keyValues = keyValues;
-    }
+    // parameters
+    // allow set (from parser)
+    // allow get (from executor/ simulator)
+
+
 }
