@@ -1,25 +1,28 @@
-package TES;
-
-import TES.SimCommands.AddTrack;
 import java.util.HashMap;
 
 
 public class Parser {
 
-    public Object[] parse(String input) {
+    public CommandData parse(String input) {
 
         HashMap<String, String> keyValue = new HashMap<>();
         String[] words = input.split(" ");
 
         String commandName = words[0];
 
+        if(words.length %2 == 0){
+            System.out.println("Input format: commandName arg1 val1 arg2 val2....");
+            return null;
+        }
 
-        //Argumanları yanlış verirse exception
+
         for (int i = 1; i < words.length; i+=2) {
                 keyValue.put(words[i],words[i+1]);
         }
 
-        return new Object[]{commandName,keyValue};
+        CommandData cmd = new CommandData(commandName,keyValue);
+
+        return cmd;
     }
 
 

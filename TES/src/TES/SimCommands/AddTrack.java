@@ -2,6 +2,7 @@ package TES.SimCommands;
 
 import java.util.HashMap;
 
+import TES.InputManager;
 import TES.SimObjects.*;
 import TES.Simulator;
 
@@ -17,13 +18,13 @@ public class AddTrack extends CommandBase {
     private double heading;
     private boolean isMoving;
 
-    static {
-        CommandBase.commandNames.put("addTrack", (params) -> new AddTrack(params));
+
+    static{
+        commandNames.put("addTrack", AddTrack::new);
     }
 
-
     public AddTrack(HashMap<String, String> keyValue) {
-        super("addtrack", keyValue, (params) -> new AddTrack(params));
+        super("addtrack", keyValue);
     }
 
 
@@ -33,6 +34,7 @@ public class AddTrack extends CommandBase {
 
         Track track = new Track(10, 10, 10);
         sim.addObject(track);
+
 
     }
 

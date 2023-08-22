@@ -1,15 +1,9 @@
-package TES;
-
-import TES.SimCommands.AddTrack;
-import TES.SimCommands.CommandBase;
-
-import java.util.HashMap;
-
 public class TESServer {
     InputManager inputManager;
     Simulator simulator;
     Parser parser;
     boolean isWorking;
+
 
     public TESServer() {
         isWorking = true;
@@ -29,24 +23,25 @@ public class TESServer {
         if (filePath != null) {
             inputManager.setInputFromFile(filePath);
         }
-
         String inputText;
         while (isWorking) {
             inputText = inputManager.readNext();
-            if (inputText.equals("exit")) {
+            System.out.println(inputText);
+            if(inputText == null ) {continue;}
+            else if ( inputText == "") {continue;}
+
+            else if (inputText.equals("exit")) {
                 isWorking = false;
                 close();
                 return;
+            //else if kısmı test amaçlı silinir sonra:
+            } else if (inputText.equals("showSim")) {
+                System.out.println("ACTIVE OBJECTS:");
+                simulator.printSimObjectNames();
             }
-
-            Object[] comAndKeyValue = parser.parse(inputText);
-
-            String commandName = (String) comAndKeyValue[0];
-            HashMap keyValue = (HashMap) comAndKeyValue[1];
-            CommandBase command = inputManager.getNewCommandByName(commandName,keyValue);
-            command.execute(simulator);
-
-
+            CommandData cmd = parser.parse(inputText);
+            if(cmd != null)
+                simulator.execute(cmd);//Belki başka yerde execute etcekti, ExecutionManager.execute da cağrılabilirr
         }
     }
 
@@ -56,9 +51,14 @@ public class TESServer {
     }
 
 
+
+
+
+    private static String file1 = "C:\\Users\\stj.msevinc\\Desktop\\TES\\LETSGO.txt";
+    private static String file2 = "C:\\Users\\stj.msevinc\\Desktop\\TES\\LETSGO 2.txt";
     public static void main(String[] args) {
         TESServer tesServer = new TESServer();
-        tesServer.start();
+        tesServer.start(file1);
     }
 
 }

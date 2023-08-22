@@ -1,7 +1,3 @@
-package TES;
-
-import TES.SimCommands.CommandBase;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
@@ -39,12 +35,7 @@ public class InputManager {
         return null;
     }
 
-    public CommandBase getNewCommandByName(String commandName, HashMap keyValue){
-        Function<HashMap<String, String>, CommandBase> func =  CommandBase.commandNames.get(commandName);
-        CommandBase cmd = func.apply(keyValue);
-//        CommandBase command = (CommandBase) CommandBase.commandNames.get(commandName);
-        return cmd;
-    }
+
 
 
 

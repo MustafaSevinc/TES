@@ -1,6 +1,7 @@
 package TES.SimCommands;
 import TES.Simulator;
 
+import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -12,9 +13,8 @@ public abstract class CommandBase {
     public static Map<String, Function<HashMap<String, String>, CommandBase>> commandNames = new HashMap<>();
 
 
-    public CommandBase(String commandName, HashMap<String, String> keyValue, Function<HashMap<String, String>, CommandBase> factoryFunc) {
+    public CommandBase(String commandName, HashMap<String, String> keyValue) {
         this.commandName = commandName;
-        commandNames.put(commandName, factoryFunc);
         setParams(keyValue);
     }
 
