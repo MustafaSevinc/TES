@@ -111,9 +111,6 @@ public class Simulator {
     public void moveTrack(int Id, double targetLat, double speed) {
         updatingList.add(Arrays.asList(simObjects.get(Id), targetLat, speed));
         System.out.println("trying to move obj");
-//        if (!updateThread.isAlive()){
-//            updateThread.start();
-//        }
     }
 
     private boolean sendSimObjData(Track track){
