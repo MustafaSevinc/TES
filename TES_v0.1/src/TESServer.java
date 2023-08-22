@@ -26,7 +26,6 @@ public class TESServer {
         String inputText;
         while (isWorking) {
             inputText = inputManager.readNext();
-            System.out.println(inputText);
             if(inputText == null ) {continue;}
             else if ( inputText == "") {continue;}
 

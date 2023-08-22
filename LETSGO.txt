@@ -1,0 +1,7 @@
+addTrack id 1
+moveTrack id 1 lat 10000 speed 300
+addTrack id 2
+moveTrack id 2 lat 5000 speed 100
+addTrack id 3
+moveTrack id 3 lat 7000 speed 800
+exit
