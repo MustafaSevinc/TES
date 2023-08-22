@@ -23,7 +23,7 @@ public class Simulator {
         updatingList = new ConcurrentLinkedQueue<>();
 //        updateThread = new Thread(runnable);
 
-        configureUpdateTimer();
+        //configureUpdateTimer();
 
         updateTimer = new Timer();
         TimerTask update = new TimerTask() {
