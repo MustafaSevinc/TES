@@ -1,14 +1,14 @@
-public class CreateTrackCmdExecutor extends ExecutorBase {
+public class RemoveTrackCmdExecutor extends ExecutorBase {
 
     private Simulator sim;
 
-    CreateTrackCmdExecutor(Simulator sim) {
+    RemoveTrackCmdExecutor(Simulator sim) {
         this.sim = sim;
     }
 
     @Override
     public boolean execute(CommandData cmd) {
-        System.out.println(String.format("CreateTrackCmdExecutor::execute - %s",cmd.toString()));
+        System.out.println(String.format("RemoveTrackCmdExecutor::execute - %s",cmd.toString()));
 
         String strId = cmd.getArgs().get("id");
 
@@ -19,9 +19,7 @@ public class CreateTrackCmdExecutor extends ExecutorBase {
 
         int id = Integer.parseInt(strId);
 
-        Track track = new Track(id,0,0,0);
-        sim.addObject(track);
-
+        sim.removeObject(id);
 
         return true;
     }

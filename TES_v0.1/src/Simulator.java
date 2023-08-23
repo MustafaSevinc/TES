@@ -5,55 +5,48 @@ public class Simulator {
 
     private ExecutionManager exMan;
     private HashMap<Integer, SimObjectBase> simObjects;
-    private ConcurrentLinkedQueue<List> updatingList;
-    private short tickInterval = 500;
-
-
+    private ConcurrentLinkedQueue<SimObjMovement> updatingList;
+    private long tickInterval;
     private Timer updateTimer;
 
 
-    public Simulator() {
+    public Simulator(long updateDelay, long updateTickIntervalMS) {
         simObjects = new HashMap<>();
         exMan = new ExecutionManager();
         updatingList = new ConcurrentLinkedQueue<>();
-
-        //configureUpdateTimer();
-
         updateTimer = new Timer();
+        tickInterval = updateTickIntervalMS;
+        configureUpdateTimer(updateDelay, updateTickIntervalMS);
+    }
+
+    private void configureUpdateTimer(long delay, long tickInterval) {
         TimerTask update = new TimerTask() {
             @Override
             public void run() {
-                    for(List pair : updatingList){
-                        System.out.println("Runnable enteredd");
-
-                        Track track = (Track) pair.get(0);
-                        double targetLat = (double) pair.get(1);
-                        double speed =  (double) pair.get(2);
-                        double meterps = speed*1000/tickInterval;
-                        if(Math.abs(track.latitude - targetLat)<meterps){
-                            track.latitude = targetLat;
-                            updatingList.remove(pair);
-                        }else{
-                            track.latitude += meterps;
-                        }
-                        if(sendSimObjData(track)){
-                            System.out.println("Data Send");
-                        }
+                for (SimObjMovement simObjMovement : updatingList) {
+                    if(simObjects.get(simObjMovement.getSimObj().id) == null || simObjMovement.isArrived()){
+                            updatingList.remove(simObjMovement);
+                            continue;
                     }
+                    simObjMovement.move();
+                    sendSimObjData((Track) simObjMovement.getSimObj());
                 }
+            }
         };
-        updateTimer.scheduleAtFixedRate(update, 0, tickInterval);
+        updateTimer.scheduleAtFixedRate(update, delay, tickInterval);
         registerCommands();
     }
 
+
     private void registerCommands() {
-        exMan.registerExecutor("addTrack", new CreateTrackCmdExecutor(this));
-        exMan.registerExecutor("moveTrack",new MoveTrackCmdExecutor(this));
+        exMan.registerExecutor("createTrack", new CreateTrackCmdExecutor(this));
+        exMan.registerExecutor("moveTrack", new MoveTrackCmdExecutor(this));
+        exMan.registerExecutor("removeTrack", new RemoveTrackCmdExecutor(this));
+        exMan.registerExecutor("wait", new WaitCmdExecutor(this));
         System.out.println("Simulator::registerCommands");
     }
 
     public void close() {
-        simObjects = null;
     }
 
     public void execute(CommandData cmd) {
@@ -65,23 +58,24 @@ public class Simulator {
         simObjects.put(simObject.id, simObject);
     }
 
-    public void removeObject(int Id) {
-        simObjects.remove(Id);
+    public void removeObject(int id) {
+        simObjects.remove(id);
     }
 
 
-    public void moveTrack(int Id, double targetLat, double speed) {
-        updatingList.add(Arrays.asList(simObjects.get(Id), targetLat, speed));
-        System.out.println("trying to move obj");
+    public void moveTrack(int id, Position targetpPos, double speed) {
+        SimObjMovement trackMovement = new SimObjMovement((Track) simObjects.get(id), targetpPos, speed, tickInterval);
+        updatingList.add(trackMovement);
+        System.out.println("Simulator::moveTrack");
     }
 
-    private boolean sendSimObjData(Track track){
+    private boolean sendSimObjData(Track track) {
         HashMap trackData = new HashMap<>();
-        trackData.put("lat",track.latitude);
-        trackData.put("lon",track.longitude);
-        trackData.put("alt",track.altitude);
-        trackData.put("id",track.id);
-        CommandData cmd = new CommandData("UpdateView",trackData);
+        trackData.put("x", track.position.x);
+        trackData.put("y", track.position.y);
+        trackData.put("z", track.position.z);
+        trackData.put("id", track.id);
+        CommandData cmd = new CommandData("UpdateView", trackData);
         System.out.println("Comamnd Send:");
         System.out.println(cmd.toString());
         return true;
@@ -90,7 +84,7 @@ public class Simulator {
 
     public void printSimObjectNames() {
         simObjects.forEach((key, value) -> {
-            System.out.println(key.toString()+value.toString());
+            System.out.println(key.toString() + value.toString());
         });
     }
 

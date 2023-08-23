@@ -1,7 +1,9 @@
-addTrack id 1
-moveTrack id 1 lat 10000 speed 300
-addTrack id 2
-moveTrack id 2 lat 5000 speed 100
-addTrack id 3
-moveTrack id 3 lat 32.542342 lon 34.231414551 speed 800
+createTrack id 1
+moveTrack id 1 x 943.123 y 1223.20 z 599.31 speed 300
+createTrack id 2
+moveTrack id 2 x 943.123 y 1223.20 z 599.31 speed 300
+wait sec 2
+
+removeTrack id 1
+
 exit

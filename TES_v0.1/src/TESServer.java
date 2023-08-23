@@ -17,7 +17,7 @@ public class TESServer {
     public void start(String filePath) {
 
         inputManager = new InputManager();
-        simulator = new Simulator();
+        simulator = new Simulator(0, 500);
         parser = new Parser();
 
         if (filePath != null) {
