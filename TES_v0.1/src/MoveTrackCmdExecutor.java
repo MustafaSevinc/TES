@@ -32,9 +32,9 @@ public class MoveTrackCmdExecutor extends ExecutorBase {
         double x = Double.parseDouble(strX);
         double y = Double.parseDouble(strY);
         double z = Double.parseDouble(strZ);
-        Position position = new Position(x,y,z);
+        GeoCoordinate geoCoordinate = new GeoCoordinate(x,y,z);
         int speed = Integer.parseInt(strSpeed);
 
-        return sim.moveTrack(id, speed, position);
+        return sim.moveTrack(id, speed, geoCoordinate);
     }
 }

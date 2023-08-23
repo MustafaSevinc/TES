@@ -1,17 +1,17 @@
 public class Track extends SimObjectBase {
 
-    public Position position;
+    public GeoCoordinate geoCoordinate;
     public double speed;
     public double course;
     public double heading;
 
     public Track(int id, double lat, double lon, double alt){
         super(id);
-        position = new Position(lat,alt,lon);
+        geoCoordinate = new GeoCoordinate(lat,alt,lon);
     }
 
     public String toString(){
-        return "Track id:"+id+"\n Pozisyon: "+ position.x +" "+position.y+" "+position.z;
+        return "Track id:"+id+"\n Pozisyon: "+ geoCoordinate.x +" "+ geoCoordinate.y+" "+ geoCoordinate.z;
     }
 
 

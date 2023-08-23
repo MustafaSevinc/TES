@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.List;
 
 public class AddPathPointCmdExecutor extends ExecutorBase {
@@ -29,8 +28,8 @@ public class AddPathPointCmdExecutor extends ExecutorBase {
         double x = Double.parseDouble(strX);
         double y = Double.parseDouble(strY);
         double z = Double.parseDouble(strZ);
-        Position position = new Position(x,y,z);
+        GeoCoordinate geoCoordinate = new GeoCoordinate(x,y,z);
 
-        return sim.addPointToPath(id,position);
+        return sim.addPointToPath(id, geoCoordinate);
     }
 }

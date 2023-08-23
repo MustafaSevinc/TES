@@ -1,27 +1,22 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class SimObjMovement {
+public class SimObjKinematicData {
 
     public Track simObj;
-    private ArrayList<Position> targetPos;
+    private ArrayList<GeoCoordinate> targetGeoCoords;
     private double speed;
-    private double tickInterval;
-    private double speedMultByTick;
-    private double xPerTick;
-    private double yPerTick;
-    private double zPerTick;
 
 
-    public SimObjMovement(Track simObj, Position[] targetPos, double speed, double tickInterval) {
+    public SimObjKinematicData(Track simObj, GeoCoordinate[] targetCoords, double speed) {
         this.simObj = simObj;
-        this.targetPos = new ArrayList<>();
-        this.targetPos.addAll(Arrays.asList(targetPos));
+        this.targetGeoCoords = new ArrayList<>();
+        this.targetGeoCoords.addAll(Arrays.asList(targetCoords));
         this.speed = speed;
-        this.tickInterval = tickInterval;
-        calcDeltaPos(tickInterval);
+        //this.tickInterval = tickInterval;
+        //calcDeltaPos(tickInterval);
     }
-
+/*
     public Position calcDeltaPos(double deltaTime){
         this.speedMultByTick = deltaTime * (speed /
                 (Math.sqrt(
@@ -34,31 +29,30 @@ public class SimObjMovement {
         Position pos = new Position(xPerTick,yPerTick,zPerTick);
         return pos;
     }
+    */
+    /*
     public boolean isArrivedPos(){
     return Math.abs(simObj.position.x - this.targetPos.get(0).x)<xPerTick;
-    }
+    }*/
 
-    public SimObjectBase getSimObj(){
-        return this.simObj;
-    }
-
+    /*
     public void addPoint(Position pos){
         targetPos.add(pos);
     }
-
+*/
+    /*
     public void dequeuePoint(){
         targetPos.remove(0);
-    }
+    }*/
 
+    /*
     public Position getTargetPoint(){
         if(targetPos.size() == 0)
             return null;
 
         return targetPos.get(0);
-    }
+    }*/
 
-    public void setTargetPoint(){
 
-    }
 
 }
