@@ -8,7 +8,7 @@ public class WaitCmdExecutor extends ExecutorBase {
 
     @Override
     public boolean execute(CommandData cmd) {
-        System.out.println(String.format("CreateTrackCmdExecutor::execute - %s",cmd.toString()));
+        System.out.println(String.format("WaitCmdExecutor::execute - %s",cmd.toString()));
 
         String strSec = cmd.getArgs().get("sec");
 

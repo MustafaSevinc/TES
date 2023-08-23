@@ -1,9 +1,7 @@
-createTrack id 1
+createTrack id 1 x 0 y 0 z 0
 moveTrack id 1 x 943.123 y 1223.20 z 599.31 speed 300
-createTrack id 2
+createTrack id 2 x 0 y 0 z 0
 moveTrack id 2 x 943.123 y 1223.20 z 599.31 speed 300
 wait sec 2
-
 removeTrack id 1
-
-exit
+moveTrack id 1 x 943.123 y 1223.20 z 599.31 speed 300

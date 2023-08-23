@@ -26,7 +26,7 @@ public class TESServer {
         String inputText;
         while (isWorking) {
             inputText = inputManager.readNext();
-            if(inputText == null ) {continue;}
+            if(inputText == null ) {inputManager.setInputFromTerminal();continue;}
             else if ( inputText == "") {continue;}
 
             else if (inputText.equals("exit")) {
@@ -40,7 +40,7 @@ public class TESServer {
             }
             CommandData cmd = parser.parse(inputText);
             if(cmd != null)
-                simulator.execute(cmd);//Belki başka yerde execute etcekti, ExecutionManager.execute da cağrılabilirr
+                simulator.execute(cmd);
         }
     }
 

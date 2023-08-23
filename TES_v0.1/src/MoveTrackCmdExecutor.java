@@ -35,8 +35,6 @@ public class MoveTrackCmdExecutor extends ExecutorBase {
         Position position = new Position(x,y,z);
         int speed = Integer.parseInt(strSpeed);
 
-        sim.moveTrack(id,position,speed);
-
-        return true;
+        return sim.moveTrack(id, position, speed);
     }
 }

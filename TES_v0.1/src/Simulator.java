@@ -47,6 +47,7 @@ public class Simulator {
     }
 
     public void close() {
+        updateTimer.cancel();
     }
 
     public void execute(CommandData cmd) {
@@ -54,8 +55,13 @@ public class Simulator {
             System.out.println("Simulator::execute - execution completed");
     }
 
-    public void addObject(SimObjectBase simObject) {
+    public boolean addObject(SimObjectBase simObject) {
+        if(simObjects.get(simObject.id) != null){
+            System.out.printf("Simulator::addObject FAIL. SimObj with id % already exists.",simObject.id);
+            return false;
+        }
         simObjects.put(simObject.id, simObject);
+        return true;
     }
 
     public void removeObject(int id) {
@@ -63,10 +69,15 @@ public class Simulator {
     }
 
 
-    public void moveTrack(int id, Position targetpPos, double speed) {
-        SimObjMovement trackMovement = new SimObjMovement((Track) simObjects.get(id), targetpPos, speed, tickInterval);
+    public boolean moveTrack(int id, Position targetPos, double speed) {
+        if(simObjects.get(id) == null){
+            System.out.printf("Simulator::moveTrack FAIL. SimObj with id % does not exists.",id);
+            return false;
+        }
+        SimObjMovement trackMovement = new SimObjMovement((Track) simObjects.get(id), targetPos, speed, tickInterval);
         updatingList.add(trackMovement);
         System.out.println("Simulator::moveTrack");
+        return true;
     }
 
     private boolean sendSimObjData(Track track) {
