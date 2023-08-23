@@ -24,11 +24,9 @@ public class Simulator {
             @Override
             public void run() {
                 for (SimObjMovement simObjMovement : updatingList) {
-                    if(simObjects.get(simObjMovement.getSimObj().id) == null || simObjMovement.isArrived()){
+                    if(simObjects.get(simObjMovement.getSimObj().id) == null || !simObjMovement.moveNextPoint()){
                             updatingList.remove(simObjMovement);
-                            continue;
                     }
-                    simObjMovement.move();
                     sendSimObjData((Track) simObjMovement.getSimObj());
                 }
             }
@@ -43,6 +41,10 @@ public class Simulator {
         exMan.registerExecutor("moveTrack", new MoveTrackCmdExecutor(this));
         exMan.registerExecutor("removeTrack", new RemoveTrackCmdExecutor(this));
         exMan.registerExecutor("wait", new WaitCmdExecutor(this));
+        exMan.registerExecutor("createPath", new CreatePathCmdExecutor(this));
+        exMan.registerExecutor("addPathPoint", new AddPathPointCmdExecutor(this));
+        exMan.registerExecutor("moveTrackOnPath", new MoveTrackOnPathCmdExecutor(this));
+
         System.out.println("Simulator::registerCommands");
     }
 
@@ -68,17 +70,37 @@ public class Simulator {
         simObjects.remove(id);
     }
 
+    public boolean addPointToPath(int pathId, Position pos){
+        Path path = (Path) simObjects.get(pathId);
+        if(path== null){
+            System.out.printf("Path with id % coulden't find",pathId);
+            return false;
+        }
+        path.addPoint(pos);
+        return true;
+    }
 
-    public boolean moveTrack(int id, Position targetPos, double speed) {
+
+
+    public boolean moveTrack(int id, double speed, Position... targetPos) {
         if(simObjects.get(id) == null){
             System.out.printf("Simulator::moveTrack FAIL. SimObj with id % does not exists.",id);
             return false;
         }
+        updatingList.removeIf(obj -> obj.getSimObj().id == id);
         SimObjMovement trackMovement = new SimObjMovement((Track) simObjects.get(id), targetPos, speed, tickInterval);
         updatingList.add(trackMovement);
         System.out.println("Simulator::moveTrack");
         return true;
     }
+
+    public boolean moveOnPath(int id, double speed, int pathId){
+        Path path = (Path) simObjects.get(pathId);
+        return moveTrack(id,speed, path.getPointsAsArray());
+
+    }
+
+
 
     private boolean sendSimObjData(Track track) {
         HashMap trackData = new HashMap<>();

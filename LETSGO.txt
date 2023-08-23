@@ -5,3 +5,10 @@ moveTrack id 2 x 943.123 y 1223.20 z 599.31 speed 300
 wait sec 2
 removeTrack id 1
 moveTrack id 1 x 943.123 y 1223.20 z 599.31 speed 300
+wait sec 5
+createTrack id 1 x 0 y 0 z 0
+createPath id 5 
+addPathPoint id 5 x 100 y 100 z 100
+addPathPoint id 5 x 500 y 100 z 490
+addPathPoint id 5 x 1000 y 1000 z 1000
+moveTrackOnPath id 1 pathId 5 speed 100
