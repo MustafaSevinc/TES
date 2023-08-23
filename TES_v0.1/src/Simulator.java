@@ -1,15 +1,11 @@
-//import java.util.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.Stream;
 
 public class Simulator {
 
     private ExecutionManager exMan;
     private HashMap<Integer, SimObjectBase> simObjects;
-//    private LinkedList<List> updatingList;
     private ConcurrentLinkedQueue<List> updatingList;
-    private Thread updateThread;
     private short tickInterval = 500;
 
 
@@ -19,9 +15,7 @@ public class Simulator {
     public Simulator() {
         simObjects = new HashMap<>();
         exMan = new ExecutionManager();
-//        updatingList = new LinkedList();
         updatingList = new ConcurrentLinkedQueue<>();
-//        updateThread = new Thread(runnable);
 
         //configureUpdateTimer();
 
@@ -46,11 +40,6 @@ public class Simulator {
                             System.out.println("Data Send");
                         }
                     }
-//                    try {
-//                        Thread.sleep(1000/updateFPS);
-//                    } catch (InterruptedException e) {
-//                        System.out.println("Thread sleep error");
-//                    }
                 }
         };
         updateTimer.scheduleAtFixedRate(update, 0, tickInterval);
@@ -80,33 +69,6 @@ public class Simulator {
         simObjects.remove(Id);
     }
 
-    Runnable runnable = () -> {
-        while (!updatingList.isEmpty()){
-            for(List pair : updatingList){
-                System.out.println("Runnable enteredd");
-
-                Track track = (Track) pair.get(0);
-                double targetLat = (double) pair.get(1);
-                double speed =  (double) pair.get(2);
-                double meterps = speed/tickInterval;
-                if(Math.abs(track.latitude - targetLat)<meterps){
-                    track.latitude = targetLat;
-                    updatingList.remove(pair);
-                }else{
-                    track.latitude += meterps;
-                }
-                if(sendSimObjData(track)){
-                    System.out.println("Data Send");
-                }
-            }
-            try {
-                Thread.sleep(1000/tickInterval);
-            } catch (InterruptedException e) {
-                System.out.println("Thread sleep error");
-            }
-        }
-    };
-
 
     public void moveTrack(int Id, double targetLat, double speed) {
         updatingList.add(Arrays.asList(simObjects.get(Id), targetLat, speed));
@@ -127,7 +89,9 @@ public class Simulator {
 
 
     public void printSimObjectNames() {
-
+        simObjects.forEach((key, value) -> {
+            System.out.println(key.toString()+value.toString());
+        });
     }
 
 }
