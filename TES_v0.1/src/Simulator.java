@@ -17,6 +17,7 @@ public class Simulator {
         updateTimer = new Timer();
         tickInterval = updateTickIntervalMS;
         configureUpdateTimer(updateDelay, updateTickIntervalMS);
+        registerCommands();
     }
 
     private void configureUpdateTimer(long delay, long tickInterval) {
@@ -24,15 +25,32 @@ public class Simulator {
             @Override
             public void run() {
                 for (SimObjMovement simObjMovement : updatingList) {
-                    if(simObjects.get(simObjMovement.getSimObj().id) == null || !simObjMovement.moveNextPoint()){
-                            updatingList.remove(simObjMovement);
+                    if(simObjects.get(simObjMovement.getSimObj().id) == null){
+                        updatingList.remove(simObjMovement);
+                        continue;
                     }
+                    if(simObjMovement.getTargetPoint() == null){
+                        continue;
+                    }
+                    if(simObjMovement.isArrivedPos()){
+                        Position targetPoint = simObjMovement.getTargetPoint();
+                        if(targetPoint == null){
+                            updatingList.remove(simObjMovement);
+                        }else{
+                            simObjMovement.simObj.position = simObjMovement.getTargetPoint();
+                            simObjMovement.dequeuePoint();
+                        }
+                        continue;
+                    }
+                    Position posDiff = simObjMovement.calcDeltaPos(tickInterval);
+                    System.out.println("1: "+simObjMovement.simObj.position.x);
+                    simObjMovement.simObj.position.add(posDiff);
+                    System.out.println("2: "+simObjMovement.simObj.position.x);
                     sendSimObjData((Track) simObjMovement.getSimObj());
                 }
             }
         };
         updateTimer.scheduleAtFixedRate(update, delay, tickInterval);
-        registerCommands();
     }
 
 
@@ -95,9 +113,13 @@ public class Simulator {
     }
 
     public boolean moveOnPath(int id, double speed, int pathId){
-        Path path = (Path) simObjects.get(pathId);
+        SimObjectBase obj = simObjects.get(pathId);
+        if (!(obj instanceof Path)) {
+            // todo log error
+            return false;
+        }
+        Path path = (Path)obj;
         return moveTrack(id,speed, path.getPointsAsArray());
-
     }
 
 
