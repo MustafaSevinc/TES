@@ -3,7 +3,6 @@ import java.util.List;
 public class AddPathPointCmdExecutor extends ExecutorBase {
 
     private Simulator sim;
-    private List<String> mustHaveKeys;
 
     AddPathPointCmdExecutor(Simulator sim) {
         this.sim = sim;
@@ -11,25 +10,24 @@ public class AddPathPointCmdExecutor extends ExecutorBase {
 
     @Override
     public boolean execute(CommandData cmd) {
-        System.out.println(String.format("MoveTrackCmdTrackExecutor::execute - %s",cmd.toString()));
+        System.out.println(String.format("MoveTrackCmdTrackExecutor::execute - %s", cmd.toString()));
 
         String strId = cmd.getArgs().get("id");
-        String strX = cmd.getArgs().get("x");
-        String strY = cmd.getArgs().get("y");
-        String strZ = cmd.getArgs().get("z");
+        String strLon = cmd.getArgs().get("lon");
+        String strLat = cmd.getArgs().get("lat");
+        String strAlt = cmd.getArgs().get("alt");
 
-        if(strId == null || strX == null || strY == null || strZ == null){
-            System.out.printf("give id with value: %s ",cmd.getCommandName());
-            mustHaveKeys.stream().forEach(x-> System.out.printf("%s 0 ",x));
+
+        if (strId == null) {
+            System.out.printf("give id with value: %s ", cmd.getCommandName());
             return false;
         }
 
         int id = Integer.parseInt(strId);
-        double x = Double.parseDouble(strX);
-        double y = Double.parseDouble(strY);
-        double z = Double.parseDouble(strZ);
-        GeoCoordinate geoCoordinate = new GeoCoordinate(x,y,z);
+        double lon = (strLon == null) ? 0 : Double.parseDouble(strLon);
+        double lat = (strLon == null) ? 0 : Double.parseDouble(strLat);
+        double alt = (strLon == null) ? 0 : Double.parseDouble(strAlt);
 
-        return sim.addPointToPath(id, geoCoordinate);
+        return sim.addPointToPath(id, new GeoPosition(lon, lat, alt));
     }
 }

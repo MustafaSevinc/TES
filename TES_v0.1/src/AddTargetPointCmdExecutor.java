@@ -1,17 +1,16 @@
-import java.util.Arrays;
 import java.util.List;
 
-public class MoveTrackCmdExecutor extends ExecutorBase {
+public class AddTargetPointCmdExecutor extends ExecutorBase {
 
     private Simulator sim;
     private List<String> mustHaveKeys;
 
-    MoveTrackCmdExecutor(Simulator sim) {
+    AddTargetPointCmdExecutor(Simulator sim) {
         this.sim = sim;
     }
 
     @Override
-    public boolean execute(CommandData cmd) {
+    public boolean execute(CommandData cmd) {/*
         System.out.println(String.format("MoveTrackCmdTrackExecutor::execute - %s",cmd.toString()));
         mustHaveKeys = Arrays.asList("id","x","y","z","speed");
 
@@ -32,9 +31,28 @@ public class MoveTrackCmdExecutor extends ExecutorBase {
         double x = Double.parseDouble(strX);
         double y = Double.parseDouble(strY);
         double z = Double.parseDouble(strZ);
-        GeoCoordinate geoCoordinate = new GeoCoordinate(x,y,z);
+        GeoPosition geoPosition = new GeoPosition(x,y,z);
         int speed = Integer.parseInt(strSpeed);
 
-        return sim.moveTrack(id, speed, geoCoordinate);
+        return sim.moveTrack(id, speed, geoPosition);*/
+
+        String strId = cmd.getArgs().get("id");
+        String strLon = cmd.getArgs().get("lon");
+        String strLat = cmd.getArgs().get("lat");
+        String strAlt = cmd.getArgs().get("alt");
+
+        if (strId == null || strLon == null || strLat == null) {
+            System.out.printf("give id with value: %s ", cmd.getCommandName());
+            return false;
+        }else if(strAlt == null){
+            strAlt = "0";
+        }
+
+        int id = Integer.parseInt(strId);
+        double lon = Double.parseDouble(strLon);
+        double lat = Double.parseDouble(strLat);
+        double alt = Double.parseDouble(strAlt);
+
+        return sim.addTargetPoint(id,new GeoPosition(lon,lat,alt));
     }
 }

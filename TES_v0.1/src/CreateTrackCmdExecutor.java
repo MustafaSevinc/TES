@@ -8,24 +8,23 @@ public class CreateTrackCmdExecutor extends ExecutorBase {
 
     @Override
     public boolean execute(CommandData cmd) {
-        System.out.println(String.format("CreateTrackCmdExecutor::execute - %s", cmd.toString()));
+        System.out.printf("CreateTrackCmdExecutor::execute - %s%n", cmd.toString());
 
         String strId = cmd.getArgs().get("id");
-        String strX = cmd.getArgs().get("x");
-        String strY = cmd.getArgs().get("y");
-        String strZ = cmd.getArgs().get("z");
+        String strLon = cmd.getArgs().get("lon");
+        String strLat = cmd.getArgs().get("lat");
+        String strAlt = cmd.getArgs().get("alt");
 
-        if (strId == null || strX == null || strY == null || strZ == null) {
+        if (strId == null) {
             System.out.printf("give id with value: %s ", cmd.getCommandName());
             return false;
         }
 
         int id = Integer.parseInt(strId);
-        double x = Double.parseDouble(strX);
-        double y = Double.parseDouble(strY);
-        double z = Double.parseDouble(strZ);
-
-        Track track = new Track(id, x, y, z);
+        double lon = (strLon == null) ? 0 : Double.parseDouble(strLon);
+        double lat = (strLon == null) ? 0 : Double.parseDouble(strLat);
+        double alt = (strLon == null) ? 0 : Double.parseDouble(strAlt);
+        Track track = new Track(id, new GeoPosition(lon,lat,alt));
 
         return sim.addObject(track);
     }
