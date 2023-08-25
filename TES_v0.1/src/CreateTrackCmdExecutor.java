@@ -25,7 +25,6 @@ public class CreateTrackCmdExecutor extends ExecutorBase {
         double lat = (strLon == null) ? 0 : Double.parseDouble(strLat);
         double alt = (strLon == null) ? 0 : Double.parseDouble(strAlt);
         Track track = new Track(id, new GeoPosition(lon,lat,alt));
-
         return sim.addObject(track);
     }
 }

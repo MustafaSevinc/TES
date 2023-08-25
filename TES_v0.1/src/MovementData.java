@@ -16,4 +16,10 @@ public class MovementData {
         this.speed = speed;
         this.isMoving = false;
     }
+
+    public GeoPosition getNextPoint(){
+        return geoPositions.get(targetPositionIndex);
+    }
+
+
 }

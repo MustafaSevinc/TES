@@ -1,4 +1,3 @@
-import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -23,12 +22,14 @@ public class Simulator {
         exMan.registerExecutor("createTrack", new CreateTrackCmdExecutor(this));
         exMan.registerExecutor("createPath", new CreatePathCmdExecutor(this));
         exMan.registerExecutor("addPathPoint", new AddPathPointCmdExecutor(this));
+        exMan.registerExecutor("update", new UpdateSimObjCmdExecutor(this));
+        exMan.registerExecutor("addPathToTrack", new AddPathToTrackCmdExecutor(this));
+        exMan.registerExecutor("trackStartMoving", new TrackStartMovingCmdExecutor(this));
+
 
         //exMan.registerExecutor("addTarget", new AddTargetPointCmdExecutor(this));
-        exMan.registerExecutor("destroyTrack", new RemoveTrackCmdExecutor(this));
+        exMan.registerExecutor("destroy", new RemoveTrackCmdExecutor(this));
         exMan.registerExecutor("wait", new WaitCmdExecutor(this));
-        exMan.registerExecutor("addPathToSimObj", new AddPathToSimObjCmdExecutor(this));
-        exMan.registerExecutor("startMotion", new StartMotionCmdExecutor(this));
         System.out.println("Simulator::registerCommands");
     }
 
@@ -40,10 +41,7 @@ public class Simulator {
                     if (movObj.isMoving) {
                         System.out.println(movObj.simObj.geoPosition);
 
-
-
-
-                        movObj.simObj.geoPosition = calcCoordAfterTime(movObj, (double) tickInterval/1000);
+                        movObj.simObj.geoPosition = calcCoordAfterTime(movObj, (double) tickInterval / 1000);
                     }
                 }
             }
@@ -70,6 +68,7 @@ public class Simulator {
     }
 
     public void removeObject(int id) {
+        updatingList.stream().filter(movData -> movData.simObj.id == id).findAny().ifPresent(mov -> updatingList.remove(mov));
         simObjects.remove(id);
     }
 
@@ -82,13 +81,56 @@ public class Simulator {
         return true;
     }
 
-    public boolean updateTrack(int id, GeoPosition pos, double speed){
-        if (simObjects.get(id) instanceof Track track) {
-            track.geoPosition.alt = pos.alt == null ? track.geoPosition.alt : pos.alt;
-            return true;
+    public boolean addPathToTrack(int trackId, int pathId) {
+        MovementData mov = getMovementData(trackId);
+        if (!(simObjects.get(pathId) instanceof Path path)) {
+            System.out.printf("Path with id %s coulden't find", pathId);
+            System.out.println(simObjects);
+            return false;
         }
-        System.out.println("Simulator::updateTrack-> Track doesn't exist");
-        return false;
+        mov.geoPositions.addAll(path.points);
+        return true;
+    }
+
+/*
+    //Sim Obje Vermek Bertan Abinin Fikriydi!
+        private SimObjectBase getSimObject(int id) {
+        return simObjects.get(id);
+    }*/
+
+    public boolean setSpeedOfObj(int id, double speed) {
+        MovementData mov = getMovementData(id);
+        mov.speed = speed;
+        return true;
+    }
+
+    public boolean setPosOfObj(int id, GeoPosition pos) {
+        SimObjectBase simObj = simObjects.get(id);
+        if (!Double.isNaN(pos.lon)) {
+            simObj.geoPosition.lon = pos.lon;
+        }
+        if (!Double.isNaN(pos.lat)) {
+            simObj.geoPosition.lat = pos.lat;
+        }
+        if (!Double.isNaN(pos.alt)) {
+            simObj.geoPosition.alt = pos.alt;
+        }
+        return true;
+    }
+
+    public boolean setTrackMoving(int id, boolean isMoving) {
+        getMovementData(id).isMoving = isMoving;
+        return true;
+    }
+
+
+    private MovementData getMovementData(int trackId) {
+        MovementData mov = updatingList.stream().filter(movData -> movData.simObj.id == trackId).findAny().orElse(null);
+        if (mov == null) {
+            mov = new MovementData((Track) simObjects.get(trackId), 0);
+            updatingList.add(mov);
+        }
+        return mov;
     }
 
 
@@ -150,28 +192,32 @@ public class Simulator {
 
 
     // TODO Mustafa method basına 20 comment line
+
     /********************************* GEO CALCULATIONS **************************************/
-    private GeoPosition calcCoordAfterTime(MovementData kinematic, double dtSec) {
-        ArrayList<GeoPosition> targetCoords = kinematic.geoPositions;
-        double distToMove = kinematic.speed * dtSec;
-        double temp_dist = 0;
-        GeoPosition temp_coord = kinematic.simObj.geoPosition;
-        // sonraki pozisyona göre bilmemne
-        for (GeoPosition tar_coord : targetCoords) {
-            temp_dist = distance(temp_coord, tar_coord);
-            if (temp_dist < distToMove) {
+    private GeoPosition calcCoordAfterTime(MovementData mov, double dtSec) {
+        double distToMove = mov.speed * dtSec;
+        GeoPosition currentPos = mov.simObj.geoPosition;
+        GeoPosition nextPos;
+        for (int i = mov.targetPositionIndex; i < mov.geoPositions.size(); i++) {
+            nextPos = mov.getNextPoint();
+            double temp_dist = distance(currentPos, nextPos);
+            if (distToMove > temp_dist) {
+                currentPos = nextPos;
+                mov.targetPositionIndex += 1;
                 distToMove -= temp_dist;
-                temp_coord = tar_coord;
                 continue;
             }
-            double distRatio = distToMove / temp_dist;
-            GeoPosition geoPosition = new GeoPosition(temp_coord.lat + (tar_coord.lat - temp_coord.lat) * distRatio,
-                    temp_coord.lon + (tar_coord.lon - temp_coord.lon) * distRatio,
-                    temp_coord.alt + (tar_coord.alt - temp_coord.alt) * distRatio);
-            return geoPosition;//Eğer uçak yamuk giderse buranın suçu;
-        }
+            double distRatio = distToMove/temp_dist;
+            return new GeoPosition(
+                    currentPos.lon+(nextPos.lon-currentPos.lon)*distRatio,
+                    currentPos.lat+(nextPos.lat- currentPos.lat)*distRatio,
+                    currentPos.alt+(nextPos.alt-currentPos.alt)*distRatio);
 
-        return targetCoords.get(targetCoords.size() - 1);
+        }
+        mov.targetPositionIndex -= 1;
+        mov.isMoving= false;
+        return mov.getNextPoint();
+
     }
 
     public double distance(GeoPosition pos1, GeoPosition pos2) {

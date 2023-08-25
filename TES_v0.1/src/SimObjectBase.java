@@ -5,6 +5,7 @@ public abstract class SimObjectBase {
     GeoPosition geoPosition;
 
     SimObjectBase(int id, GeoPosition position){
+        this.id = id;
         this.geoPosition = position;
     }
 

@@ -52,7 +52,7 @@ public class AddTargetPointCmdExecutor extends ExecutorBase {
         double lon = Double.parseDouble(strLon);
         double lat = Double.parseDouble(strLat);
         double alt = Double.parseDouble(strAlt);
-
-        return sim.addTargetPoint(id,new GeoPosition(lon,lat,alt));
+        return false;
+       //return sim.addTargetPoint(id,new GeoPosition(lon,lat,alt));
     }
 }

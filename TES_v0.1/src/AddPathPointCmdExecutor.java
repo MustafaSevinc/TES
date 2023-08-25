@@ -10,7 +10,7 @@ public class AddPathPointCmdExecutor extends ExecutorBase {
 
     @Override
     public boolean execute(CommandData cmd) {
-        System.out.println(String.format("MoveTrackCmdTrackExecutor::execute - %s", cmd.toString()));
+        System.out.println(String.format("AddPathPointCmdExecutor::execute - %s", cmd.toString()));
 
         String strId = cmd.getArgs().get("id");
         String strLon = cmd.getArgs().get("lon");
@@ -25,8 +25,8 @@ public class AddPathPointCmdExecutor extends ExecutorBase {
 
         int id = Integer.parseInt(strId);
         double lon = (strLon == null) ? 0 : Double.parseDouble(strLon);
-        double lat = (strLon == null) ? 0 : Double.parseDouble(strLat);
-        double alt = (strLon == null) ? 0 : Double.parseDouble(strAlt);
+        double lat = (strLat == null) ? 0 : Double.parseDouble(strLat);
+        double alt = (strAlt == null) ? 0 : Double.parseDouble(strAlt);
 
         return sim.addPointToPath(id, new GeoPosition(lon, lat, alt));
     }
