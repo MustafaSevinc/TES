@@ -1,8 +1,12 @@
+package TES.Server.SimObjects;
+
+import TES.Server.GeoPosition;
+
 public abstract class SimObjectBase {
 
 
-    int id;
-    GeoPosition geoPosition;
+    public int id;
+    public GeoPosition geoPosition;
 
     SimObjectBase(int id, GeoPosition position){
         this.id = id;

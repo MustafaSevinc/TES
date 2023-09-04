@@ -1,3 +1,5 @@
+package TES.Server.Executors;
+import TES.Server.CommandData;
 import java.util.HashMap;
 
 public class ExecutionManager {

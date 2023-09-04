@@ -1,14 +1,19 @@
+package TES.Server.Executors;
+
+import TES.Server.CommandData;
+import TES.Server.Simulator;
+
 public class RemoveTrackCmdExecutor extends ExecutorBase {
 
     private Simulator sim;
 
-    RemoveTrackCmdExecutor(Simulator sim) {
+    public RemoveTrackCmdExecutor(Simulator sim) {
         this.sim = sim;
     }
 
     @Override
     public boolean execute(CommandData cmd) {
-        System.out.println(String.format("RemoveTrackCmdExecutor::execute - %s",cmd.toString()));
+        System.out.println(String.format("TESServer.RemoveTrackCmdExecutor::execute - %s",cmd.toString()));
 
         String strId = cmd.getArgs().get("id");
 

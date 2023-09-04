@@ -1,4 +1,11 @@
-import java.util.*;
+package TES.Server;
+
+import TES.Server.Executors.*;
+import TES.Server.SimObjects.*;
+
+import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Simulator {
@@ -27,10 +34,10 @@ public class Simulator {
         exMan.registerExecutor("trackStartMoving", new TrackStartMovingCmdExecutor(this));
 
 
-        //exMan.registerExecutor("addTarget", new AddTargetPointCmdExecutor(this));
+        //exMan.registerExecutor("addTarget", new TESServer.AddTargetPointCmdExecutor(this));
         exMan.registerExecutor("destroy", new RemoveTrackCmdExecutor(this));
         exMan.registerExecutor("wait", new WaitCmdExecutor(this));
-        System.out.println("Simulator::registerCommands");
+        System.out.println("TESServer.Simulator::registerCommands");
     }
 
     private void configureUpdateTimer(long delay, long tickInterval) {
@@ -55,12 +62,12 @@ public class Simulator {
 
     public void execute(CommandData cmd) {
         if (exMan.execute(cmd))
-            System.out.println("Simulator::execute - execution completed");
+            System.out.println("TESServer.Simulator::execute - execution completed");
     }
 
     public boolean addObject(SimObjectBase simObject) {
         if (simObjects.get(simObject.id) != null) {
-            System.out.printf("Simulator::addObject FAIL. SimObj with id %s already exists.", simObject.id);
+            System.out.printf("TESServer.Simulator::addObject FAIL. SimObj with id %s already exists.", simObject.id);
             return false;
         }
         simObjects.put(simObject.id, simObject);
@@ -74,7 +81,7 @@ public class Simulator {
 
     public boolean addPointToPath(int pathId, GeoPosition pos) {
         if (!(simObjects.get(pathId) instanceof Path path)) {
-            System.out.printf("Path with id %s coulden't find", pathId);
+            System.out.printf("TESServer.Path with id %s coulden't find", pathId);
             return false;
         }
         path.addPoint(pos);
@@ -84,7 +91,7 @@ public class Simulator {
     public boolean addPathToTrack(int trackId, int pathId) {
         MovementData mov = getMovementData(trackId);
         if (!(simObjects.get(pathId) instanceof Path path)) {
-            System.out.printf("Path with id %s coulden't find", pathId);
+            System.out.printf("TESServer.Path with id %s coulden't find", pathId);
             System.out.println(simObjects);
             return false;
         }
@@ -93,8 +100,8 @@ public class Simulator {
     }
 
 /*
-    //Sim Obje Vermek Bertan Abinin Fikriydi!
-        private SimObjectBase getSimObject(int id) {
+    //Sim Obje Vermek Bertan Abinin Fikriydi
+        private TESServer.SimObjectBase getSimObject(int id) {
         return simObjects.get(id);
     }*/
 
@@ -134,21 +141,25 @@ public class Simulator {
     }
 
 
-  /*  public boolean addTargetPoint(int simObjId, GeoPosition geoPosition) {
-        for (MovementData kinematic : updatingList) {
+
+
+
+
+  /*  public boolean addTargetPoint(int simObjId, TESServer.GeoPosition geoPosition) {
+        for (TESServer.MovementData kinematic : updatingList) {
             if (kinematic.simObj.id == simObjId) {
                 kinematic.geoPositions.add(geoPosition);
             }
         }
-        MovementData trackMovement = new MovementData((Track) simObjects.get(simObjId), 0);
+        TESServer.MovementData trackMovement = new TESServer.MovementData((TESServer.Track) simObjects.get(simObjId), 0);
         updatingList.add(trackMovement);
 
-        System.out.println("Simulator::addTargetCoord");
+        System.out.println("TESServer.Simulator::addTargetCoord");
         return true;
     }
 
     public boolean startMotion(int simObjId, double speed) {
-        for (MovementData kinematic : updatingList) {
+        for (TESServer.MovementData kinematic : updatingList) {
             if (kinematic.simObj.id == simObjId) {
                 kinematic.speed = speed;
                 kinematic.isMoving = true;
@@ -160,17 +171,16 @@ public class Simulator {
 */
 /*
     public boolean moveOnPath(int id, int pathId) {
-        SimObjectBase obj = simObjects.get(pathId);
-        if (!(obj instanceof Path path)) {
+        TESServer.SimObjectBase obj = simObjects.get(pathId);
+        if (!(obj instanceof TESServer.Path path)) {
             // todo log error
             return false;
         }
-        for (GeoPosition p : path.points){
+        for (TESServer.GeoPosition p : path.points){
             addTargetPoint(id,p);
         }
     }
 */
-
     private boolean sendSimObjData(Track track) {
         HashMap trackData = new HashMap<>();
         trackData.put("x", track.geoPosition.lon);
@@ -190,12 +200,24 @@ public class Simulator {
         });
     }
 
+    /***********************************************************    COMMAND GÖNDERME İŞLEMLERİ    **********************************************************************/
+    public CommandData createCommand(SimObjectBase simObj){
+        HashMap<String,String> keyValues = new HashMap();
+        keyValues.put("lon", String.valueOf(simObj.geoPosition.lon));
+        keyValues.put("lat", String.valueOf(simObj.geoPosition.lat));
+        keyValues.put("alt", String.valueOf(simObj.geoPosition.alt));
+        CommandData cmd = new CommandData("update_position",keyValues);
+        return cmd;
+    }
 
-    // TODO Mustafa method basına 20 comment line
+
 
     /********************************* GEO CALCULATIONS **************************************/
+    // TODO Mustafa method basına 20 comment line
     private GeoPosition calcCoordAfterTime(MovementData mov, double dtSec) {
+        //2 update arasında geçen sürede alınması gereken yolu hesapla
         double distToMove = mov.speed * dtSec;
+        //Asıl pozisyondan kaç nokta veya metre uzakta olduğunu hesapla
         GeoPosition currentPos = mov.simObj.geoPosition;
         GeoPosition nextPos;
         for (int i = mov.targetPositionIndex; i < mov.geoPositions.size(); i++) {
@@ -208,6 +230,7 @@ public class Simulator {
                 continue;
             }
             double distRatio = distToMove/temp_dist;
+            //gerekli mesafe farkını ekle döndür.
             return new GeoPosition(
                     currentPos.lon+(nextPos.lon-currentPos.lon)*distRatio,
                     currentPos.lat+(nextPos.lat- currentPos.lat)*distRatio,

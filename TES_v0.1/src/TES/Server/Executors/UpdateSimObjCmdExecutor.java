@@ -1,8 +1,14 @@
+package TES.Server.Executors;
+
+import TES.Server.CommandData;
+import TES.Server.GeoPosition;
+import TES.Server.Simulator;
+
 public class UpdateSimObjCmdExecutor extends ExecutorBase {
 
     private Simulator sim;
 
-    UpdateSimObjCmdExecutor(Simulator sim) {
+    public UpdateSimObjCmdExecutor(Simulator sim) {
         this.sim = sim;
     }
 
@@ -26,7 +32,6 @@ public class UpdateSimObjCmdExecutor extends ExecutorBase {
         int id = Integer.parseInt(strId);
 
         if (strSpeed != null) {
-            System.out.println("SPEEEEEEEEEEEEEEED");
             System.out.println(strSpeed);
             sim.setSpeedOfObj(id, Double.parseDouble(strSpeed));
         }

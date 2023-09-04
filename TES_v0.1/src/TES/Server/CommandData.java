@@ -1,3 +1,5 @@
+package TES.Server;
+
 import java.util.Map;
 
 public class CommandData {
@@ -18,7 +20,7 @@ public class CommandData {
 
     @Override
     public String toString() {
-        return "CommandData{" +
+        return "TESServer.CommandData{" +
                 "commandName='" + commandName + '\'' +
                 ", args=" + args +
                 '}';

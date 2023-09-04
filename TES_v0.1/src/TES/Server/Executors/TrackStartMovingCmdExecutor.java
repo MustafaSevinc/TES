@@ -1,15 +1,20 @@
+package TES.Server.Executors;
+
+import TES.Server.CommandData;
+import TES.Server.Simulator;
+
 public class TrackStartMovingCmdExecutor extends ExecutorBase {
 
     private Simulator sim;
 
 
-    TrackStartMovingCmdExecutor(Simulator sim) {
+    public TrackStartMovingCmdExecutor(Simulator sim) {
         this.sim = sim;
     }
 
     @Override
     public boolean execute(CommandData cmd) {
-        System.out.println(String.format("TrackStartMovingCmdExecutor::execute - %s", cmd.toString()));
+        System.out.println(String.format("TESServer.TrackStartMovingCmdExecutor::execute - %s", cmd.toString()));
 
         String strId = cmd.getArgs().get("id");
 

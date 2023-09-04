@@ -1,15 +1,21 @@
-public class CreatePathCmdExecutor extends ExecutorBase {
+package TES.Server.Executors;
+
+import TES.Server.CommandData;
+import TES.Server.GeoPosition;
+import TES.Server.Simulator;
+import TES.Server.SimObjects.Track;
+
+public class CreateTrackCmdExecutor extends ExecutorBase {
 
     private Simulator sim;
 
-    CreatePathCmdExecutor(Simulator sim) {
+    public CreateTrackCmdExecutor(Simulator sim) {
         this.sim = sim;
     }
 
     @Override
     public boolean execute(CommandData cmd) {
-        System.out.printf("CreatePathCmdExecutor::execute - %s%n", cmd.toString());
-
+        System.out.printf("TESServer.CreateTrackCmdExecutor::execute - %s%n", cmd.toString());
 
         String strId = cmd.getArgs().get("id");
         String strLon = cmd.getArgs().get("lon");
@@ -25,8 +31,7 @@ public class CreatePathCmdExecutor extends ExecutorBase {
         double lon = (strLon == null) ? 0 : Double.parseDouble(strLon);
         double lat = (strLon == null) ? 0 : Double.parseDouble(strLat);
         double alt = (strLon == null) ? 0 : Double.parseDouble(strAlt);
-        Path path = new Path(id, new GeoPosition(lon,lat,alt));
-
-        return sim.addObject(path);
+        Track track = new Track(id, new GeoPosition(lon,lat,alt));
+        return sim.addObject(track);
     }
 }

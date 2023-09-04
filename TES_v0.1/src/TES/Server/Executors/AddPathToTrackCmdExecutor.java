@@ -1,14 +1,19 @@
+package TES.Server.Executors;
+
+import TES.Server.CommandData;
+import TES.Server.Simulator;
+
 public class AddPathToTrackCmdExecutor extends ExecutorBase {
 
     private Simulator sim;
 
-    AddPathToTrackCmdExecutor(Simulator sim) {
+    public AddPathToTrackCmdExecutor(Simulator sim) {
         this.sim = sim;
     }
 
     @Override
     public boolean execute(CommandData cmd) {
-        System.out.println(String.format("AddPathToTrackCmdExecutor::execute - %s", cmd.toString()));
+        System.out.println(String.format("TESServer.AddPathToTrackCmdExecutor::execute - %s", cmd.toString()));
 
 
         String strId = cmd.getArgs().get("trackId");

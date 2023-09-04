@@ -1,3 +1,8 @@
+package TES.Server.Executors;
+
+import TES.Server.CommandData;
+import TES.Server.Simulator;
+
 import java.util.List;
 
 public class AddTargetPointCmdExecutor extends ExecutorBase {
@@ -31,7 +36,7 @@ public class AddTargetPointCmdExecutor extends ExecutorBase {
         double x = Double.parseDouble(strX);
         double y = Double.parseDouble(strY);
         double z = Double.parseDouble(strZ);
-        GeoPosition geoPosition = new GeoPosition(x,y,z);
+        TESServer.GeoPosition geoPosition = new TESServer.GeoPosition(x,y,z);
         int speed = Integer.parseInt(strSpeed);
 
         return sim.moveTrack(id, speed, geoPosition);*/
@@ -53,6 +58,6 @@ public class AddTargetPointCmdExecutor extends ExecutorBase {
         double lat = Double.parseDouble(strLat);
         double alt = Double.parseDouble(strAlt);
         return false;
-       //return sim.addTargetPoint(id,new GeoPosition(lon,lat,alt));
+       //return sim.addTargetPoint(id,new TESServer.GeoPosition(lon,lat,alt));
     }
 }

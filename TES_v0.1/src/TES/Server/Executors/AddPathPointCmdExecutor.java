@@ -1,19 +1,26 @@
-public class CreateTrackCmdExecutor extends ExecutorBase {
+package TES.Server.Executors;
+
+import TES.Server.CommandData;
+import TES.Server.GeoPosition;
+import TES.Server.Simulator;
+
+public class AddPathPointCmdExecutor extends ExecutorBase {
 
     private Simulator sim;
 
-    CreateTrackCmdExecutor(Simulator sim) {
+    public AddPathPointCmdExecutor(Simulator sim) {
         this.sim = sim;
     }
 
     @Override
     public boolean execute(CommandData cmd) {
-        System.out.printf("CreateTrackCmdExecutor::execute - %s%n", cmd.toString());
+        System.out.println(String.format("TESServer.AddPathPointCmdExecutor::execute - %s", cmd.toString()));
 
         String strId = cmd.getArgs().get("id");
         String strLon = cmd.getArgs().get("lon");
         String strLat = cmd.getArgs().get("lat");
         String strAlt = cmd.getArgs().get("alt");
+
 
         if (strId == null) {
             System.out.printf("give id with value: %s ", cmd.getCommandName());
@@ -22,9 +29,9 @@ public class CreateTrackCmdExecutor extends ExecutorBase {
 
         int id = Integer.parseInt(strId);
         double lon = (strLon == null) ? 0 : Double.parseDouble(strLon);
-        double lat = (strLon == null) ? 0 : Double.parseDouble(strLat);
-        double alt = (strLon == null) ? 0 : Double.parseDouble(strAlt);
-        Track track = new Track(id, new GeoPosition(lon,lat,alt));
-        return sim.addObject(track);
+        double lat = (strLat == null) ? 0 : Double.parseDouble(strLat);
+        double alt = (strAlt == null) ? 0 : Double.parseDouble(strAlt);
+
+        return sim.addPointToPath(id, new GeoPosition(lon, lat, alt));
     }
 }

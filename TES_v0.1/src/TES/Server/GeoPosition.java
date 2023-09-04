@@ -1,3 +1,5 @@
+package TES.Server;
+
 public class GeoPosition {
     public double lat;
     public double lon;
@@ -11,7 +13,7 @@ public class GeoPosition {
 
     @Override
     public String toString() {
-        return "GeoPosition{" +
+        return "TESServer.GeoPosition{" +
                 "lon=" + lon +
                 ", lat=" + lat +
                 ", alt=" + alt +

@@ -1,3 +1,7 @@
+package TES.Server.SimObjects;
+
+import TES.Server.GeoPosition;
+
 import java.util.ArrayList;
 
 public class Path extends SimObjectBase{
@@ -14,7 +18,7 @@ public class Path extends SimObjectBase{
     }
     public void removePoint(int index){
         if(index >= points.size() || index < 0){
-            System.out.println("Path::removePoint Fail -> index out of Range");
+            System.out.println("TESServer.Path::removePoint Fail -> index out of Range");
             return;
         }
         points.remove(index);

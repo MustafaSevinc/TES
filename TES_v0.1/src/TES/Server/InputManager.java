@@ -1,3 +1,5 @@
+package TES.Server;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -5,9 +7,11 @@ import java.util.Scanner;
 public class InputManager {
 
     private Scanner scanner;
+    Parser parser;
 
     public InputManager() {
         scanner = new Scanner(System.in);
+        parser = new Parser();
     }
 
 
@@ -31,6 +35,10 @@ public class InputManager {
             return scanner.nextLine();
         }
         return null;
+    }
+
+    public CommandData readNextAsCmd(){
+        return parser.parse(readNext());
     }
 
 
