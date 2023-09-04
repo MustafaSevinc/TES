@@ -1,5 +1,7 @@
 package TES.Server;
 
+import TES.Server.Datas.CommandData;
+import TES.Server.Input.InputManager;
 import TES.Server.Network.ServerNetworkManager;
 
 import java.io.IOException;
@@ -9,6 +11,7 @@ public class TESServer {
     Simulator simulator;
     boolean isWorking;
     ServerNetworkManager networkManager;
+    Thread clientAcceptThread;
 
 
     public TESServer(int port) {
@@ -29,6 +32,7 @@ public class TESServer {
     }
 
     public void start() {
+        startClientAcceptThread();
         while (isWorking) {
             CommandData cmd = inputManager.readNextAsCmd();
             if (cmd != null) {
@@ -38,14 +42,35 @@ public class TESServer {
                     return;
                 }
                 simulator.execute(cmd);
+                networkManager.sendChangesToClients(simulator.getChanges());
             }
         }
     }
 
     public void close() {
+        clientAcceptThread.interrupt();
         inputManager.close();
         simulator.close();
     }
+
+    private void startClientAcceptThread(){
+         clientAcceptThread = new Thread(() -> {
+            try {
+                networkManager.acceptClients();
+            } catch (IOException e) {
+                System.out.println("ServerNetworkManager::startClientThread -> acceptClients() hatası");
+                throw new RuntimeException(e);
+            }
+        });
+        clientAcceptThread.start();
+    }
+
+
+
+
+
+
+
 
 
     private static String file1 = "C:\\Users\\stj.msevinc\\Desktop\\TES\\LETSGO.txt";

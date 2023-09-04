@@ -1,14 +1,13 @@
-package TES.Server;
+package TES.Server.Datas;
 
 import TES.Server.SimObjects.SimObjectBase;
-import TES.Server.SimObjects.Track;
 
 import java.util.ArrayList;
 
 public class MovementData {
 
     public SimObjectBase simObj;
-    public ArrayList<GeoPosition> geoPositions;
+    public ArrayList<GeoPositionData> geoPositions;
     public int targetPositionIndex;
     public double speed;
     public boolean isMoving;
@@ -22,7 +21,7 @@ public class MovementData {
         this.isMoving = false;
     }
 
-    public GeoPosition getNextPoint(){
+    public GeoPositionData getNextPoint(){
         return geoPositions.get(targetPositionIndex);
     }
 

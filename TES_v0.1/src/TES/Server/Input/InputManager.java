@@ -1,4 +1,6 @@
-package TES.Server;
+package TES.Server.Input;
+
+import TES.Server.Datas.CommandData;
 
 import java.io.File;
 import java.io.FileNotFoundException;

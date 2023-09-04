@@ -1,7 +1,7 @@
 package TES.Server.Executors;
 
-import TES.Server.CommandData;
-import TES.Server.GeoPosition;
+import TES.Server.Datas.CommandData;
+import TES.Server.Datas.GeoPositionData;
 import TES.Server.Simulator;
 import TES.Server.SimObjects.Track;
 
@@ -31,7 +31,7 @@ public class CreateTrackCmdExecutor extends ExecutorBase {
         double lon = (strLon == null) ? 0 : Double.parseDouble(strLon);
         double lat = (strLon == null) ? 0 : Double.parseDouble(strLat);
         double alt = (strLon == null) ? 0 : Double.parseDouble(strAlt);
-        Track track = new Track(id, new GeoPosition(lon,lat,alt));
+        Track track = new Track(id, new GeoPositionData(lon,lat,alt));
         return sim.addObject(track);
     }
 }

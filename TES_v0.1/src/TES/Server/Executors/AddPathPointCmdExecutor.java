@@ -1,7 +1,7 @@
 package TES.Server.Executors;
 
-import TES.Server.CommandData;
-import TES.Server.GeoPosition;
+import TES.Server.Datas.CommandData;
+import TES.Server.Datas.GeoPositionData;
 import TES.Server.Simulator;
 
 public class AddPathPointCmdExecutor extends ExecutorBase {
@@ -32,6 +32,6 @@ public class AddPathPointCmdExecutor extends ExecutorBase {
         double lat = (strLat == null) ? 0 : Double.parseDouble(strLat);
         double alt = (strAlt == null) ? 0 : Double.parseDouble(strAlt);
 
-        return sim.addPointToPath(id, new GeoPosition(lon, lat, alt));
+        return sim.addPointToPath(id, new GeoPositionData(lon, lat, alt));
     }
 }

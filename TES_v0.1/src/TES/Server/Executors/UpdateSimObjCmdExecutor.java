@@ -1,7 +1,7 @@
 package TES.Server.Executors;
 
-import TES.Server.CommandData;
-import TES.Server.GeoPosition;
+import TES.Server.Datas.CommandData;
+import TES.Server.Datas.GeoPositionData;
 import TES.Server.Simulator;
 
 public class UpdateSimObjCmdExecutor extends ExecutorBase {
@@ -37,7 +37,7 @@ public class UpdateSimObjCmdExecutor extends ExecutorBase {
         }
 
         //Eğer inputta olmayan değerler varsa null set ediyoruz.
-        GeoPosition pos = new GeoPosition(
+        GeoPositionData pos = new GeoPositionData(
                 ((strLon == null) ? Double.NaN : Double.parseDouble(strLon)),
                 ((strLat == null) ? Double.NaN : Double.parseDouble(strLat)),
                 ((strAlt == null) ? Double.NaN : Double.parseDouble(strAlt)));

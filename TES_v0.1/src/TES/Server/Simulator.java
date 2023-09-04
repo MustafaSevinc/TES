@@ -1,8 +1,12 @@
 package TES.Server;
 
+import TES.Server.Datas.CommandData;
+import TES.Server.Datas.GeoPositionData;
+import TES.Server.Datas.MovementData;
 import TES.Server.Executors.*;
 import TES.Server.SimObjects.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -14,46 +18,44 @@ public class Simulator {
     private HashMap<Integer, SimObjectBase> simObjects;
     private ConcurrentLinkedQueue<MovementData> updatingList;
     private Timer updateTimer;
+    private ConcurrentLinkedQueue changes;
+    private long tickInterval;
+    private long delay;
 
 
     public Simulator(long updateDelay, long updateTickIntervalMS) {
         simObjects = new HashMap<>();
-        exMan = new ExecutionManager();
         updatingList = new ConcurrentLinkedQueue<>();
+        changes = new ConcurrentLinkedQueue<>();
         updateTimer = new Timer();
+        exMan = new ExecutionManager(this);
         configureUpdateTimer(updateDelay, updateTickIntervalMS);
-        registerCommands();
-    }
-
-    private void registerCommands() {
-        exMan.registerExecutor("createTrack", new CreateTrackCmdExecutor(this));
-        exMan.registerExecutor("createPath", new CreatePathCmdExecutor(this));
-        exMan.registerExecutor("addPathPoint", new AddPathPointCmdExecutor(this));
-        exMan.registerExecutor("update", new UpdateSimObjCmdExecutor(this));
-        exMan.registerExecutor("addPathToTrack", new AddPathToTrackCmdExecutor(this));
-        exMan.registerExecutor("trackStartMoving", new TrackStartMovingCmdExecutor(this));
-
-
-        //exMan.registerExecutor("addTarget", new TESServer.AddTargetPointCmdExecutor(this));
-        exMan.registerExecutor("destroy", new RemoveTrackCmdExecutor(this));
-        exMan.registerExecutor("wait", new WaitCmdExecutor(this));
-        System.out.println("TESServer.Simulator::registerCommands");
     }
 
     private void configureUpdateTimer(long delay, long tickInterval) {
+        this.delay = delay;
+        this.tickInterval = tickInterval;
+        updateTimer.scheduleAtFixedRate(getUpdateTask(), delay, tickInterval);
+    }
+
+    private TimerTask getUpdateTask() {
         TimerTask update = new TimerTask() {
             @Override
             public void run() {
                 for (MovementData movObj : updatingList) {
                     if (movObj.isMoving) {
+                        updatePos(movObj, (double) tickInterval / 1000);
                         System.out.println(movObj.simObj.geoPosition);
-
-                        movObj.simObj.geoPosition = calcCoordAfterTime(movObj, (double) tickInterval / 1000);
                     }
                 }
             }
         };
-        updateTimer.scheduleAtFixedRate(update, delay, tickInterval);
+        return update;
+    }
+
+    private void updatePos(MovementData movObj, double dT) {
+        movObj.simObj.geoPosition = calcCoordChange(movObj, dT);
+
     }
 
     public void close() {
@@ -79,7 +81,7 @@ public class Simulator {
         simObjects.remove(id);
     }
 
-    public boolean addPointToPath(int pathId, GeoPosition pos) {
+    public boolean addPointToPath(int pathId, GeoPositionData pos) {
         if (!(simObjects.get(pathId) instanceof Path path)) {
             System.out.printf("TESServer.Path with id %s coulden't find", pathId);
             return false;
@@ -111,7 +113,7 @@ public class Simulator {
         return true;
     }
 
-    public boolean setPosOfObj(int id, GeoPosition pos) {
+    public boolean setPosOfObj(int id, GeoPositionData pos) {
         SimObjectBase simObj = simObjects.get(id);
         if (!Double.isNaN(pos.lon)) {
             simObj.geoPosition.lon = pos.lon;
@@ -131,44 +133,40 @@ public class Simulator {
     }
 
 
-    private MovementData getMovementData(int trackId) {
-        MovementData mov = updatingList.stream().filter(movData -> movData.simObj.id == trackId).findAny().orElse(null);
+    private MovementData getMovementData(int objID) {
+        MovementData mov = updatingList.stream().filter(movData -> movData.simObj.id == objID).findAny().orElse(null);
         if (mov == null) {
-            mov = new MovementData((Track) simObjects.get(trackId), 0);
+            mov = new MovementData(simObjects.get(objID), 0);
             updatingList.add(mov);
         }
         return mov;
     }
 
 
+    /*  public boolean addTargetPoint(int simObjId, TESServer.GeoPosition geoPosition) {
+          for (TESServer.MovementData kinematic : updatingList) {
+              if (kinematic.simObj.id == simObjId) {
+                  kinematic.geoPositions.add(geoPosition);
+              }
+          }
+          TESServer.MovementData trackMovement = new TESServer.MovementData((TESServer.Track) simObjects.get(simObjId), 0);
+          updatingList.add(trackMovement);
 
+          System.out.println("TESServer.Simulator::addTargetCoord");
+          return true;
+      }
 
-
-
-  /*  public boolean addTargetPoint(int simObjId, TESServer.GeoPosition geoPosition) {
-        for (TESServer.MovementData kinematic : updatingList) {
-            if (kinematic.simObj.id == simObjId) {
-                kinematic.geoPositions.add(geoPosition);
-            }
-        }
-        TESServer.MovementData trackMovement = new TESServer.MovementData((TESServer.Track) simObjects.get(simObjId), 0);
-        updatingList.add(trackMovement);
-
-        System.out.println("TESServer.Simulator::addTargetCoord");
-        return true;
-    }
-
-    public boolean startMotion(int simObjId, double speed) {
-        for (TESServer.MovementData kinematic : updatingList) {
-            if (kinematic.simObj.id == simObjId) {
-                kinematic.speed = speed;
-                kinematic.isMoving = true;
-                return true;
-            }
-        }
-        return false;
-    }
-*/
+      public boolean startMotion(int simObjId, double speed) {
+          for (TESServer.MovementData kinematic : updatingList) {
+              if (kinematic.simObj.id == simObjId) {
+                  kinematic.speed = speed;
+                  kinematic.isMoving = true;
+                  return true;
+              }
+          }
+          return false;
+      }
+  */
 /*
     public boolean moveOnPath(int id, int pathId) {
         TESServer.SimObjectBase obj = simObjects.get(pathId);
@@ -201,25 +199,28 @@ public class Simulator {
     }
 
     /***********************************************************    COMMAND GÖNDERME İŞLEMLERİ    **********************************************************************/
-    public CommandData createCommand(SimObjectBase simObj){
-        HashMap<String,String> keyValues = new HashMap();
+    public CommandData createCommand(SimObjectBase simObj) {
+        HashMap<String, String> keyValues = new HashMap();
         keyValues.put("lon", String.valueOf(simObj.geoPosition.lon));
         keyValues.put("lat", String.valueOf(simObj.geoPosition.lat));
         keyValues.put("alt", String.valueOf(simObj.geoPosition.alt));
-        CommandData cmd = new CommandData("update_position",keyValues);
+        CommandData cmd = new CommandData("update_position", keyValues);
         return cmd;
     }
 
 
-
     /********************************* GEO CALCULATIONS **************************************/
     // TODO Mustafa method basına 20 comment line
-    private GeoPosition calcCoordAfterTime(MovementData mov, double dtSec) {
+
+    /**
+     * Geçen Süre Boyunca Objenin ilerlemesi Gerektiği Miktar
+     */
+    private GeoPositionData calcCoordChange(MovementData mov, double dtSec) {
         //2 update arasında geçen sürede alınması gereken yolu hesapla
         double distToMove = mov.speed * dtSec;
-        //Asıl pozisyondan kaç nokta veya metre uzakta olduğunu hesapla
-        GeoPosition currentPos = mov.simObj.geoPosition;
-        GeoPosition nextPos;
+        //Asıl pozisyondan kaç nokta ve metre uzakta olduğunu hesapla
+        GeoPositionData currentPos = mov.simObj.geoPosition;
+        GeoPositionData nextPos;
         for (int i = mov.targetPositionIndex; i < mov.geoPositions.size(); i++) {
             nextPos = mov.getNextPoint();
             double temp_dist = distance(currentPos, nextPos);
@@ -229,32 +230,44 @@ public class Simulator {
                 distToMove -= temp_dist;
                 continue;
             }
-            double distRatio = distToMove/temp_dist;
-            //gerekli mesafe farkını ekle döndür.
-            return new GeoPosition(
-                    currentPos.lon+(nextPos.lon-currentPos.lon)*distRatio,
-                    currentPos.lat+(nextPos.lat- currentPos.lat)*distRatio,
-                    currentPos.alt+(nextPos.alt-currentPos.alt)*distRatio);
+            double distRatio = distToMove / temp_dist;
+            //Üzerine eklenilmesi gereken miktarı bul ve döndür
+            return new GeoPositionData(
+                    (nextPos.lon - currentPos.lon) * distRatio,
+                    (nextPos.lat - currentPos.lat) * distRatio,
+                    (nextPos.alt - currentPos.alt) * distRatio);
 
         }
         mov.targetPositionIndex -= 1;
-        mov.isMoving= false;
+        mov.isMoving = false;
         return mov.getNextPoint();
 
     }
 
-    public double distance(GeoPosition pos1, GeoPosition pos2) {
+    private double distance(GeoPositionData pos1, GeoPositionData pos2) {
         final int R = 6371; // Earth is totaly circle
+        //2 lat ve lon arasındaki radyanı hesapla
         double latDistance = Math.toRadians(pos2.lat - pos1.lat);
         double lonDistance = Math.toRadians(pos2.lon - pos1.lon);
+        //2 nokta arasındaki mesafeyi yarıçapa oranına göre hesapla
         double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
                 + Math.cos(Math.toRadians(pos1.lat)) * Math.cos(Math.toRadians(pos2.lat))
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-        // whf is c?
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        double distance = R * c * 1000; // Metre cinsinden
+        //Aradaki mesafeyi metre cinsinden hesapla
+        double distance = R * c * 1000;
         double height = pos1.alt - pos2.alt;
         distance = Math.pow(distance, 2) + Math.pow(height, 2);
         return Math.sqrt(distance);
+    }
+
+    ArrayList<CommandData> getChanges() {
+        ArrayList<CommandData> res = new ArrayList();
+        synchronized (changes) {
+            while (!changes.isEmpty()) {
+                res.add((CommandData) changes.poll());
+            }
+        }
+        return res;
     }
 }

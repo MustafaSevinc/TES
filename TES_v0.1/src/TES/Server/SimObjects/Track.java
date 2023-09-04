@@ -1,10 +1,10 @@
 package TES.Server.SimObjects;
 
-import TES.Server.GeoPosition;
+import TES.Server.Datas.GeoPositionData;
 
 public class Track extends SimObjectBase {
 
-    public Track(int id, GeoPosition geoPosition){
+    public Track(int id, GeoPositionData geoPosition){
         super(id,geoPosition);
     }
 

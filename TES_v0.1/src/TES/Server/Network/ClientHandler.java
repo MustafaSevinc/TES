@@ -1,6 +1,6 @@
 package TES.Server.Network;
 
-import TES.Server.CommandData;
+import TES.Server.Datas.CommandData;
 
 import java.io.IOException;
 import java.io.OutputStream;

@@ -1,19 +1,19 @@
 package TES.Server.SimObjects;
 
-import TES.Server.GeoPosition;
+import TES.Server.Datas.GeoPositionData;
 
 import java.util.ArrayList;
 
 public class Path extends SimObjectBase{
-    public ArrayList<GeoPosition> points;
+    public ArrayList<GeoPositionData> points;
 
-    public Path(int id, GeoPosition geoPosition){
+    public Path(int id, GeoPositionData geoPosition){
         super(id,geoPosition);
         points = new ArrayList<>();
     }
 
 
-    public void addPoint(GeoPosition pos){
+    public void addPoint(GeoPositionData pos){
         points.add(pos);
     }
     public void removePoint(int index){

@@ -1,6 +1,6 @@
 package TES.Server.Executors;
 
-import TES.Server.CommandData;
+import TES.Server.Datas.CommandData;
 
 public abstract class ExecutorBase {
 

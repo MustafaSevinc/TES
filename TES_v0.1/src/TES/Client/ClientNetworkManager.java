@@ -9,6 +9,7 @@ class ClientNetworkManager {
     private int serverPort;
     private Socket socket;
     private InputStream inputStream;
+    private BufferedReader reader;
     private OutputStream outputStream;
 
     public ClientNetworkManager(String serverAddress, int serverPort) {
@@ -19,8 +20,12 @@ class ClientNetworkManager {
     public void connectToServer() throws IOException {
         socket = new Socket(serverAddress, serverPort);
         inputStream = socket.getInputStream();
+        reader = new BufferedReader(new InputStreamReader(inputStream));
         outputStream = socket.getOutputStream();
     }
-    public void receiveChanges(ArrayList<String/*TESServer.CommandData olcak Aslında*/> changes) {
+    public void receiveChanges() throws IOException {
+        String data = reader.readLine();
+        if(data != null)
+            System.out.println(data);
     }
 }

@@ -1,6 +1,6 @@
 package TES.Server.Network;
 
-import TES.Server.CommandData;
+import TES.Server.Datas.CommandData;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -14,6 +14,7 @@ public class ServerNetworkManager {
 
     public ServerNetworkManager(int port) throws IOException {
         this.serverSocket = new ServerSocket(port);
+        this.clients = new ArrayList<>();
         isOnline = true;
     }
 
@@ -26,6 +27,8 @@ public class ServerNetworkManager {
             new Thread(clientHandler).start();
         }
     }
+
+
 
     public void sendChangesToClients(ArrayList<CommandData> changes){
         for(ClientHandler client: clients){
