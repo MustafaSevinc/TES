@@ -53,11 +53,6 @@ public class Simulator {
         return update;
     }
 
-    private void updatePos(MovementData movObj, double dT) {
-        movObj.simObj.geoPosition = calcCoordChange(movObj, dT);
-
-    }
-
     public void close() {
         updateTimer.cancel();
     }
@@ -65,6 +60,12 @@ public class Simulator {
     public void execute(CommandData cmd) {
         if (exMan.execute(cmd))
             System.out.println("TESServer.Simulator::execute - execution completed");
+    }
+
+    /********************************************          Simulasyon Dünyasını Mıncıklayan Metotlar          **********************************************/
+
+    private void updatePos(MovementData movObj, double dT) {
+        movObj.simObj.geoPosition = calcCoordChange(movObj, dT);
     }
 
     public boolean addObject(SimObjectBase simObject) {
@@ -101,12 +102,6 @@ public class Simulator {
         return true;
     }
 
-/*
-    //Sim Obje Vermek Bertan Abinin Fikriydi
-        private TESServer.SimObjectBase getSimObject(int id) {
-        return simObjects.get(id);
-    }*/
-
     public boolean setSpeedOfObj(int id, double speed) {
         MovementData mov = getMovementData(id);
         mov.speed = speed;
@@ -127,6 +122,17 @@ public class Simulator {
         return true;
     }
 
+    /*******************************************************************************************************************************************************/
+
+
+
+
+
+/*
+    //Sim Obje Vermek Bertan Abinin Fikriydi
+        private TESServer.SimObjectBase getSimObject(int id) {
+        return simObjects.get(id);
+    }*/
     public boolean setTrackMoving(int id, boolean isMoving) {
         getMovementData(id).isMoving = isMoving;
         return true;
@@ -179,6 +185,17 @@ public class Simulator {
         }
     }
 */
+
+
+    /***********************************************************    COMMAND OLUŞTURMA İŞLEMLERİ    **********************************************************************/
+    public CommandData createCommand(SimObjectBase simObj) {
+        HashMap<String, String> keyValues = new HashMap();
+        keyValues.put("lon", String.valueOf(simObj.geoPosition.lon));
+        keyValues.put("lat", String.valueOf(simObj.geoPosition.lat));
+        keyValues.put("alt", String.valueOf(simObj.geoPosition.alt));
+        CommandData cmd = new CommandData("update_position", keyValues);
+        return cmd;
+    }
     private boolean sendSimObjData(Track track) {
         HashMap trackData = new HashMap<>();
         trackData.put("x", track.geoPosition.lon);
@@ -198,18 +215,9 @@ public class Simulator {
         });
     }
 
-    /***********************************************************    COMMAND GÖNDERME İŞLEMLERİ    **********************************************************************/
-    public CommandData createCommand(SimObjectBase simObj) {
-        HashMap<String, String> keyValues = new HashMap();
-        keyValues.put("lon", String.valueOf(simObj.geoPosition.lon));
-        keyValues.put("lat", String.valueOf(simObj.geoPosition.lat));
-        keyValues.put("alt", String.valueOf(simObj.geoPosition.alt));
-        CommandData cmd = new CommandData("update_position", keyValues);
-        return cmd;
-    }
 
+    /*****************************************************************    GEO CALCULATIONS   ****************************************************************************/
 
-    /********************************* GEO CALCULATIONS **************************************/
     // TODO Mustafa method basına 20 comment line
 
     /**

@@ -4,11 +4,11 @@ import TES.Server.Datas.CommandData;
 import TES.Server.Datas.GeoPositionData;
 import TES.Server.Simulator;
 
-public class AddPathPointCmdExecutor extends ExecutorBase {
+public class AddPointToPathExer extends ExecutorBase {
 
     private Simulator sim;
 
-    public AddPathPointCmdExecutor(Simulator sim) {
+    public AddPointToPathExer(Simulator sim) {
         this.sim = sim;
     }
 

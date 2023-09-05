@@ -4,11 +4,11 @@ import TES.Server.Datas.CommandData;
 import TES.Server.Datas.GeoPositionData;
 import TES.Server.Simulator;
 
-public class UpdateSimObjCmdExecutor extends ExecutorBase {
+public class UpdateSimObjExer extends ExecutorBase {
 
     private Simulator sim;
 
-    public UpdateSimObjCmdExecutor(Simulator sim) {
+    public UpdateSimObjExer(Simulator sim) {
         this.sim = sim;
     }
 

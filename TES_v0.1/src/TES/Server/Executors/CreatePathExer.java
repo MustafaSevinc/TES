@@ -5,11 +5,11 @@ import TES.Server.Datas.GeoPositionData;
 import TES.Server.SimObjects.Path;
 import TES.Server.Simulator;
 
-public class CreatePathCmdExecutor extends ExecutorBase {
+public class CreatePathExer extends ExecutorBase {
 
     private Simulator sim;
 
-    public CreatePathCmdExecutor(Simulator sim) {
+    public CreatePathExer(Simulator sim) {
         this.sim = sim;
     }
 

@@ -5,11 +5,11 @@ import TES.Server.Datas.GeoPositionData;
 import TES.Server.Simulator;
 import TES.Server.SimObjects.Track;
 
-public class CreateTrackCmdExecutor extends ExecutorBase {
+public class CreateTrackExer extends ExecutorBase {
 
     private Simulator sim;
 
-    public CreateTrackCmdExecutor(Simulator sim) {
+    public CreateTrackExer(Simulator sim) {
         this.sim = sim;
     }
 

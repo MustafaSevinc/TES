@@ -18,15 +18,15 @@ public class ExecutionManager {
      * Simulator için yazılan Executorları register et
      **/
     private void registerExecutors() {
-        executors.put("createTrack", new CreateTrackCmdExecutor(sim));
-        executors.put("createPath", new CreatePathCmdExecutor(sim));
-        executors.put("addPathPoint", new AddPathPointCmdExecutor(sim));
-        executors.put("update", new UpdateSimObjCmdExecutor(sim));
+        executors.put("createTrack", new CreateTrackExer(sim));
+        executors.put("createPath", new CreatePathExer(sim));
+        executors.put("addPathPoint", new AddPointToPathExer(sim));
+        executors.put("update", new UpdateSimObjExer(sim));
         executors.put("addPathToTrack", new AddPathToTrackCmdExecutor(sim));
-        executors.put("trackStartMoving", new TrackStartMovingCmdExecutor(sim));
+        executors.put("trackStartMoving", new TrackStartMovingExer(sim));
 
         //exMan.registerExecutor("addTarget", new TESServer.AddTargetPointCmdExecutor(this));
-        executors.put("destroy", new RemoveTrackCmdExecutor(sim));
+        executors.put("destroy", new RemoveTrackExer(sim));
         executors.put("wait", new WaitCmdExecutor(sim));
         System.out.println("TESServer.Simulator::registerCommands");
     }

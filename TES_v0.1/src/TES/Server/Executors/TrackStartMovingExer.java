@@ -3,12 +3,12 @@ package TES.Server.Executors;
 import TES.Server.Datas.CommandData;
 import TES.Server.Simulator;
 
-public class TrackStartMovingCmdExecutor extends ExecutorBase {
+public class TrackStartMovingExer extends ExecutorBase {
 
     private Simulator sim;
 
 
-    public TrackStartMovingCmdExecutor(Simulator sim) {
+    public TrackStartMovingExer(Simulator sim) {
         this.sim = sim;
     }
 

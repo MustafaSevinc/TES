@@ -3,11 +3,11 @@ package TES.Server.Executors;
 import TES.Server.Datas.CommandData;
 import TES.Server.Simulator;
 
-public class RemoveTrackCmdExecutor extends ExecutorBase {
+public class RemoveTrackExer extends ExecutorBase {
 
     private Simulator sim;
 
-    public RemoveTrackCmdExecutor(Simulator sim) {
+    public RemoveTrackExer(Simulator sim) {
         this.sim = sim;
     }
 
